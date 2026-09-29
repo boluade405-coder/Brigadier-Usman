@@ -1,0 +1,22 @@
+:root {
+  --ink: #142219;
+  --paper: #f2f0ea;
+  --cream: #e7e2d6;
+  --olive: #2f6946;
+  --green: #123d2d;
+  --gold: #b99658;
+  --line: rgba(20, 34, 25, .19);
+}
+
+.nav-solid { background: rgba(242, 240, 234, .92); }
+.page-nav, .detail-page { background: var(--paper); }
+.page-hero { background: var(--cream); }
+.memorial-guide, .legacy-section, .journey-focus, .archive-page-card { background: #fffdf7; }
+.image-frame { background: #dbd6c8; }
+.guide-card:hover { background: #f5f3ed; }
+
+.hero .hero-image { filter: contrast(1.08) saturate(1.1); }
+.feature-photo img { filter: sepia(.19) contrast(1.05); }
+.gallery-card img { filter: sepia(.1) contrast(1.04); }
+.legacy-image img, .legacy-explorer-image img { filter: sepia(.1) contrast(1.08); }
+.archive-page-card img { filter: sepia(.08) contrast(1.06); }

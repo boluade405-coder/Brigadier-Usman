@@ -1,0 +1,26 @@
+/* Desktop: keep the upper part of the portraits, including faces, in view. */
+@media (min-width: 801px) {
+  .hero .hero-image {
+    object-position: 50% 15%;
+  }
+}
+
+.hero-actions .light-link:first-child {
+  background: var(--green);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 999px;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.hero-actions .light-link:first-child:hover {
+  background: #354834;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 800px) {
+  .hero {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+}
