@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import PhotosApp from './PhotosApp.jsx'
 
 const journeyPhotos = [
   '/archive/1.webp',
@@ -54,34 +56,6 @@ function PageHeader({ page, onNavigate }) {
   return <header className="page-nav"><button className="page-wordmark" onClick={() => onNavigate('')}><span>MU</span><b>MEMORIAL</b></button><nav aria-label="Memorial sections"><button onClick={() => onNavigate('')}>Home</button><button className={page === 'journey' ? 'active' : ''} onClick={() => onNavigate('journey')}>Journey</button><button className={page === 'archive' ? 'active' : ''} onClick={() => onNavigate('archive')}>Archive</button><button className={page === 'legacy' ? 'active' : ''} onClick={() => onNavigate('legacy')}>Legacy</button></nav><button className="back-home" onClick={() => onNavigate('')}>← Home</button></header>
 }
 
-function JourneyPageLegacy({ onNavigate }) {
-  const [selected, setSelected] = useState(0); const item = journeyItems[selected]
-  return <><PageHeader page="journey" onNavigate={onNavigate} /><main className="detail-page journey-page"><section className="page-hero journey-page-hero"><div><p className="eyebrow">THE JOURNEY · 1940—1975</p><h1>A life in<br /><em>chapters.</em></h1><p>A chronological account of the man, the officer and the administrator — told through the people, places and records that shaped his life.</p></div><figure className="journey-hero-portrait"><img src="/portraits/musa-usman-uniform.webp" alt="Brigadier Musa Usman in ceremonial uniform" /></figure></section><section className="journey-detail"><div className="journey-list" role="tablist" aria-label="Life chapters">{journeyItems.map((chapter, index) => <button key={chapter.title} className={selected === index ? 'active' : ''} onClick={() => setSelected(index)} role="tab" aria-selected={selected === index}><span>{String(index + 1).padStart(2, '0')}</span><b>{chapter.year}</b><i>{chapter.kicker}</i></button>)}</div><article className="journey-focus"><div className="journey-focus-copy"><p className="eyebrow">{item.year} · {item.kicker}</p><h2>{item.title}</h2><p>{item.copy}</p><aside>{item.note}</aside><button className="text-link" onClick={() => onNavigate('archive')}>View related archive <span className="arrow">→</span></button></div><img key={`${item.image}-${selected}`} src={item.image} alt={item.alt} /></article></section><section className="journey-markers"><p className="eyebrow">THE PATH OF SERVICE</p><div><span>Cadet</span><i>→</i><span>Officer</span><i>→</i><span>Command</span><i>→</i><span>Governor</span><i>→</i><span>Brigadier</span></div></section></main></>
-}
-
-function ArchivePageLegacy({ onNavigate }) {
-  const [filter, setFilter] = useState('All'); const [selected, setSelected] = useState(null); const filters = ['All', 'Military service', 'Congo & international service', 'Governor', 'Development era', 'Family & private life']; const visible = filter === 'All' ? archiveItems : archiveItems.filter(item => item.collection === filter)
-  return <><PageHeader page="archive" onNavigate={onNavigate} /><main className="detail-page archive-page"><section className="page-hero archive-page-hero"><p className="eyebrow">THE ARCHIVE · PRESERVING THE EVIDENCE</p><h1>A living<br /><em>record.</em></h1><p>A digital museum of the man, the era and the evidence: photographs, documents, maps, newspapers and the memories of those who knew the work.</p></section><section className="archive-collections"><div><p className="eyebrow">PHOTOGRAPH COLLECTIONS</p><h2>Eight ways into<br />the archive.</h2></div><div className="collection-list">{collections.map(([title, description], index) => <article key={title}><span>{String(index + 1).padStart(2, '0')}</span><b>{title}</b><p>{description}</p></article>)}</div></section><div className="archive-toolbar" role="toolbar" aria-label="Filter archive images">{filters.map(item => <button key={item} className={filter === item ? 'active' : ''} onClick={() => setFilter(item)}>{item}</button>)}</div><section className="archive-page-grid">{visible.map(item => <button className="archive-page-card" key={item.src} onClick={() => setSelected(item)}><img src={item.src} alt={item.title} loading="lazy" /><span><small>{item.collection}</small><b>{item.title}</b><i>{item.meta}</i></span><em>↗</em></button>)}</section><section className="archive-evidence"><div><p className="eyebrow">BEYOND THE PHOTOGRAPH</p><h2>Made useful for<br /><em>memory and research.</em></h2></div><div>{evidenceTypes.map((item, index) => <article key={item.title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></section></main>{selected && <div className="archive-lightbox" role="dialog" aria-modal="true" aria-label="Archive image viewer" onClick={() => setSelected(null)}><button onClick={() => setSelected(null)} aria-label="Close viewer">×</button><figure onClick={event => event.stopPropagation()}><img src={selected.src} alt={selected.title} /><figcaption><b>{selected.title}</b><span>{selected.meta}</span></figcaption></figure></div>}</>
-}
-
-function LegacyPage({ onNavigate }) {
-  const [open, setOpen] = useState(0)
-  const [termIndex, setTermIndex] = useState(0)
-  const legacyTerms = ['long', 'Great']
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setTermIndex(current => (current + 1) % legacyTerms.length)
-    }, 4000)
-
-    return () => window.clearInterval(interval)
-  }, [])
-
-  const isLegacyVisible = termIndex === 1
-
-  return <><PageHeader page="legacy" onNavigate={onNavigate} /><main className="detail-page legacy-page"><section className="page-hero legacy-page-hero"><img className="legacy-page-hero-image" src="/archive/1.webp" alt="" aria-hidden="true" fetchPriority="high" /><p className="eyebrow">LEGACY · WHAT HIS ADMINISTRATION SET IN MOTION</p><h1>Building for<br /><span className="legacy-term-line"><span className="legacy-term-static">the </span><span className="legacy-term-swap"><span className={termIndex === 0 ? 'legacy-term-word is-visible' : 'legacy-term-word'}>long</span><span className={termIndex === 1 ? 'legacy-term-word legacy-term-word-alt is-visible' : 'legacy-term-word legacy-term-word-alt'}>Great</span></span><span className={isLegacyVisible ? 'legacy-term-static legacy-term-legacy is-visible' : 'legacy-term-static legacy-term-term'}>{isLegacyVisible ? ' legacy.' : ' term.'}</span></span></h1><p>The legacy is best understood as a development story: linked investments in institutions, people, services and the systems that support a region.</p></section><section className="legacy-intro"><p className="eyebrow">AN INTERPRETIVE FRAMEWORK</p><div><h2>Not a list of buildings.<br /><em>A connected vision.</em></h2><p>Education, agriculture, industry, infrastructure and public administration formed mutually reinforcing parts of a regional development philosophy. This framework interprets that connection; archival records remain the source for individual projects.</p></div></section><section className="legacy-explorer"><div className="legacy-explorer-image"><img src="/archive/mu9.jpg" alt="Brigadier Musa Usman walking during a public engagement" /><div><span>Five pillars</span><b>Institution<br />building</b></div></div><div className="legacy-accordions">{legacyThemes.map((theme, index) => <article className={open === index ? 'open' : ''} key={theme.title}><button onClick={() => setOpen(open === index ? -1 : index)} aria-expanded={open === index}><span>{theme.number}</span><b>{theme.title}</b><strong>{open === index ? '−' : '+'}</strong></button><div className="legacy-panel"><div><p>{theme.text}</p><ul>{theme.projects.map(project => <li key={project}>{project}</li>)}</ul>{theme.caution && <small>{theme.caution}</small>}</div></div></article>)}<button className="round-button" onClick={() => onNavigate('archive')}>Explore the evidence <span className="arrow">→</span></button></div></section><section className="legacy-footprint"><p className="eyebrow">THE DEVELOPMENT FOOTPRINT</p><h2>Land <i>→</i> water <i>→</i> farming <i>→</i> processing <i>→</i> markets <i>→</i> opportunity.</h2><p>From the Chad Basin to Numan, Ashaka, Maiduguri and communities across the former North-Eastern State, the project atlas locates initiatives within the larger development story.</p></section></main></>
-}
-
 function JourneyPage({ onNavigate }) {
   const getStoryFromUrl = () => {
     const rawParam = new URLSearchParams(window.location.search).get('story')
@@ -95,7 +69,6 @@ function JourneyPage({ onNavigate }) {
   const carouselRef = useRef(null)
   const cardRefs = useRef([])
   const dragRef = useRef({ active: false, startX: 0, startScroll: 0, moved: false, suppressClick: false })
-  const item = journeyItems[selected]
   const selectCard = index => {
     setSelected(index)
     cardRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
@@ -140,7 +113,6 @@ function JourneyPage({ onNavigate }) {
         setOpenStory(null)
       }
     }
-
     window.addEventListener('popstate', syncFromUrl)
     return () => window.removeEventListener('popstate', syncFromUrl)
   }, [])
@@ -148,13 +120,11 @@ function JourneyPage({ onNavigate }) {
   useEffect(() => {
     const carousel = carouselRef.current
     if (!carousel) return undefined
-
     const storyIndex = getStoryFromUrl()
     if (storyIndex === null) {
       carousel.scrollTo({ left: 0, behavior: 'auto' })
       setSelected(0)
     }
-
     return undefined
   }, [])
 
@@ -228,39 +198,35 @@ function JourneyPage({ onNavigate }) {
         <div><p className="eyebrow">THE JOURNEY · 1940—1975</p><h1>A life in<br /><em>chapters.</em></h1><p>A chronological account of the man, the officer and the administrator — told through the people, places and records that shaped his life.</p></div>
         <figure className="journey-hero-portrait"><img src="/portraits/musa-usman-uniform.webp" alt="Brigadier Musa Usman in ceremonial uniform" /></figure>
       </section>
-
       <section className="journey-rebuild" aria-labelledby="journey-rebuild-title">
-        <div className="journey-rebuild-intro">
-          <p className="eyebrow">A LIFE OF SERVICE</p>
-          <h2 id="journey-rebuild-title">A legacy that<br /><em>moved a region forward.</em></h2>
-          <p>Follow the milestones, places and people that shaped Brigadier Musa Usman’s life in service — from early formation to lasting public leadership.</p>
-        </div>
-
-        <div className="journey-stories-heading">
-          <h3>Real stories. <em>Real impact.</em></h3>
-          <button onClick={() => onNavigate('archive')}>Explore the archive <span aria-hidden="true">›</span></button>
-        </div>
-        <div className="journey-chapter-window" ref={carouselRef}>
-          <div className="journey-chapter-grid" aria-label="Journey chapters">
-          {journeyItems.map((chapter, index) => {
-            return <article className={`journey-chapter-card ${selected === index ? 'active' : ''}`} key={chapter.title} ref={element => { cardRefs.current[index] = element }}>
-            <button className="journey-chapter-media" onClick={() => handleChapterClick(index)} aria-label={`Open story: ${chapter.title}`}>
-              <img src={chapter.image} alt="" />
-              <div className="journey-chapter-overlay"><p>{chapter.year} · {chapter.kicker}</p><h3>{chapter.title}</h3><span className="journey-chapter-summary">{chapter.summary}</span></div>
-              <span className="journey-card-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" /></svg></span>
-            </button>
-          </article>
-          })}
-          </div>
-        </div>
-        <div className="journey-stories-controls" aria-label="Story carousel controls">
-          <button onClick={goToPrevious} aria-label="Previous story"><svg viewBox="0 0 24 24"><path d="M19 12H6M11 6l-6 6 6 6" /></svg></button>
-          <button onClick={goToNext} aria-label="Next story"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" /></svg></button>
-        </div>
-
+        <div className="journey-rebuild-intro"><p className="eyebrow">A LIFE OF SERVICE</p><h2 id="journey-rebuild-title">A legacy that<br /><em>moved a region forward.</em></h2><p>Follow the milestones, places and people that shaped Brigadier Musa Usman’s life in service — from early formation to lasting public leadership.</p></div>
+        <div className="journey-stories-heading"><h3>Real stories. <em>Real impact.</em></h3><button onClick={() => onNavigate('archive')}>Explore the archive <span aria-hidden="true">›</span></button></div>
+        <div className="journey-chapter-window" ref={carouselRef}><div className="journey-chapter-grid" aria-label="Journey chapters">
+          {journeyItems.map((chapter, index) => <article className={`journey-chapter-card ${selected === index ? 'active' : ''}`} key={chapter.title} ref={element => { cardRefs.current[index] = element }}><button className="journey-chapter-media" onClick={() => handleChapterClick(index)} aria-label={`Open story: ${chapter.title}`}><img src={chapter.image} alt="" /><div className="journey-chapter-overlay"><p>{chapter.year} · {chapter.kicker}</p><h3>{chapter.title}</h3><span className="journey-chapter-summary">{chapter.summary}</span></div><span className="journey-card-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" /></svg></span></button></article>)}
+        </div></div>
+        <div className="journey-stories-controls" aria-label="Story carousel controls"><button onClick={goToPrevious} aria-label="Previous story"><svg viewBox="0 0 24 24"><path d="M19 12H6M11 6l-6 6 6 6" /></svg></button><button onClick={goToNext} aria-label="Next story"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" /></svg></button></div>
       </section>
     </main>
   </>
+}
+
+function ArchivePageLegacy({ onNavigate }) {
+  const [filter, setFilter] = useState('All'); const [selected, setSelected] = useState(null); const filters = ['All', 'Military service', 'Congo & international service', 'Governor', 'Development era', 'Family & private life']; const visible = filter === 'All' ? archiveItems : archiveItems.filter(item => item.collection === filter)
+  return <><PageHeader page="archive" onNavigate={onNavigate} /><main className="detail-page archive-page"><section className="page-hero archive-page-hero"><p className="eyebrow">THE ARCHIVE · PRESERVING THE EVIDENCE</p><h1>A living<br /><em>record.</em></h1><p>A digital museum of the man, the era and the evidence: photographs, documents, maps, newspapers and the memories of those who knew the work.</p></section><section className="archive-collections"><div><p className="eyebrow">PHOTOGRAPH COLLECTIONS</p><h2>Eight ways into<br />the archive.</h2></div><div className="collection-list">{collections.map(([title, description], index) => <article key={title}><span>{String(index + 1).padStart(2, '0')}</span><b>{title}</b><p>{description}</p></article>)}</div></section><div className="archive-toolbar" role="toolbar" aria-label="Filter archive images">{filters.map(item => <button key={item} className={filter === item ? 'active' : ''} onClick={() => setFilter(item)}>{item}</button>)}</div><section className="archive-page-grid">{visible.map(item => <button className="archive-page-card" key={item.src} onClick={() => setSelected(item)}><img src={item.src} alt={item.title} loading="lazy" /><span><small>{item.collection}</small><b>{item.title}</b><i>{item.meta}</i></span><em>↗</em></button>)}</section><section className="archive-evidence"><div><p className="eyebrow">BEYOND THE PHOTOGRAPH</p><h2>Made useful for<br /><em>memory and research.</em></h2></div><div>{evidenceTypes.map((item, index) => <article key={item.title}><span>{String(index + 1).padStart(2, '0')}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}</div></section></main>{selected && <div className="archive-lightbox" role="dialog" aria-modal="true" aria-label="Archive image viewer" onClick={() => setSelected(null)}><button onClick={() => setSelected(null)} aria-label="Close viewer">×</button><figure onClick={event => event.stopPropagation()}><img src={selected.src} alt={selected.title} /><figcaption><b>{selected.title}</b><span>{selected.meta}</span></figcaption></figure></div>}</>
+}
+
+function LegacyPage({ onNavigate }) {
+  const [open, setOpen] = useState(0)
+  const [termIndex, setTermIndex] = useState(0)
+  const legacyTerms = ['long', 'Great']
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setTermIndex(current => (current + 1) % legacyTerms.length), 4000)
+    return () => window.clearInterval(interval)
+  }, [])
+
+  const isLegacyVisible = termIndex === 1
+  return <><PageHeader page="legacy" onNavigate={onNavigate} /><main className="detail-page legacy-page"><section className="page-hero legacy-page-hero"><img className="legacy-page-hero-image" src="/archive/1.webp" alt="" aria-hidden="true" /><p className="eyebrow">LEGACY · WHAT HIS ADMINISTRATION SET IN MOTION</p><h1>Building for<br /><span className="legacy-term-line"><span className="legacy-term-static">the </span><span className="legacy-term-swap"><span className={termIndex === 0 ? 'legacy-term-word is-visible' : 'legacy-term-word'}>long</span><span className={termIndex === 1 ? 'legacy-term-word legacy-term-word-alt is-visible' : 'legacy-term-word legacy-term-word-alt'}>Great</span></span><span className={isLegacyVisible ? 'legacy-term-static legacy-term-legacy is-visible' : 'legacy-term-static legacy-term-term'}>{isLegacyVisible ? ' legacy.' : ' term.'}</span></span></h1><p>The legacy is best understood as a development story: linked investments in institutions, people, services and the systems that support a region.</p></section><section className="legacy-intro"><p className="eyebrow">AN INTERPRETIVE FRAMEWORK</p><div><h2>Not a list of buildings.<br /><em>A connected vision.</em></h2><p>Education, agriculture, industry, infrastructure and public administration formed mutually reinforcing parts of a regional development philosophy. Archival records remain the source for individual projects.</p></div></section><section className="legacy-explorer"><div className="legacy-explorer-image"><img src="/archive/mu9.jpg" alt="Brigadier Musa Usman walking during a public engagement" /><div><span>Five pillars</span><b>Institution<br />building</b></div></div><div className="legacy-accordions">{legacyThemes.map((theme, index) => <article className={open === index ? 'open' : ''} key={theme.title}><button onClick={() => setOpen(open === index ? -1 : index)} aria-expanded={open === index}><span>{theme.number}</span><b>{theme.title}</b><strong>{open === index ? '−' : '+'}</strong></button><div className="legacy-panel"><div><p>{theme.text}</p><ul>{theme.projects.map(project => <li key={project}>{project}</li>)}</ul>{theme.caution && <small>{theme.caution}</small>}</div></div></article>)}<button className="round-button" onClick={() => onNavigate('archive')}>Explore the evidence <span className="arrow">→</span></button></div></section></main></>
 }
 
 function JourneyStoryDetail({ chapter, index, onBack, onNavigate }) {
@@ -290,10 +256,7 @@ function ArchivePage({ onNavigate }) {
   const filmstrip = [...archiveItems, ...archiveItems]
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setTermIndex(current => (current + 1) % archiveTerms.length)
-    }, 4000)
-
+    const interval = window.setInterval(() => setTermIndex(current => (current + 1) % archiveTerms.length), 4000)
     return () => window.clearInterval(interval)
   }, [])
 
@@ -301,9 +264,9 @@ function ArchivePage({ onNavigate }) {
     <PageHeader page="archive" onNavigate={onNavigate} />
     <main className="detail-page archive-rebuild-page">
       <section className="page-hero legacy-page-hero archive-page-hero">
-        <img className="legacy-page-hero-image" src="/archive/70.webp" alt="" aria-hidden="true" fetchPriority="high" />
+        <img className="legacy-page-hero-image" src="/archive/1.webp" alt="" aria-hidden="true" fetchPriority="high" />
         <p className="eyebrow">THE ARCHIVE · PRESERVING THE EVIDENCE</p>
-        <h1>A living<br /><span className="legacy-term-line"><span className="legacy-term-swap"><span className={termIndex === 0 ? 'legacy-term-word is-visible' : 'legacy-term-word'}>record.</span><span className={termIndex === 1 ? 'legacy-term-word legacy-term-word-alt is-visible legacy-term-legacy' : 'legacy-term-word legacy-term-word-alt'}>legacy.</span></span></span></h1>
+        <h1>A living<br /><span className="legacy-term-line"><span className="legacy-term-swap"><span className={termIndex === 0 ? 'legacy-term-word is-visible' : 'legacy-term-word'}>record.</span><span className={termIndex === 1 ? 'legacy-term-word legacy-term-word-alt is-visible' : 'legacy-term-word legacy-term-word-alt'}>legacy.</span></span></span></h1>
         <p>A digital museum of the man, the era and the evidence: photographs, documents, maps, newspapers and the memories of those who knew the work.</p>
       </section>
 
@@ -317,7 +280,7 @@ function ArchivePage({ onNavigate }) {
       </section>
 
       <section className="archive-facts" aria-labelledby="archive-facts-title">
-        <header><h2 id="archive-facts-title">Every image holds<br /><em>a story.</em></h2><button onClick={() => document.getElementById('archive-evidence')?.scrollIntoView({ behavior: 'smooth' })}>Explore the records <span aria-hidden="true">›</span></button></header>
+        <header><h2 id="archive-facts-title">Every image holds<br /><em>a story.</em></h2><button onClick={() => onNavigate('archive/records')}>Explore the records <span aria-hidden="true">›</span></button></header>
         <div className="archive-fact-track" role="list">
           {archiveItems.map((item, index) => <article role="listitem" key={item.src} className={`archive-fact-card card-tone-${index % 3}`}>
             <img src={item.src} alt="" />
@@ -337,4 +300,4 @@ function ArchivePage({ onNavigate }) {
   </>
 }
 
-export function MemorialPage({ page, onNavigate }) { if (page === 'journey') return <JourneyPage onNavigate={onNavigate} />; if (page === 'archive') return <ArchivePage onNavigate={onNavigate} />; return <LegacyPage onNavigate={onNavigate} /> }
+export function MemorialPage({ page, onNavigate }) { if (page === 'journey') return <JourneyPage onNavigate={onNavigate} />; if (page === 'archive/records') return <PhotosApp onNavigate={onNavigate} />; if (page === 'archive') return <ArchivePage onNavigate={onNavigate} />; return <LegacyPage onNavigate={onNavigate} /> }

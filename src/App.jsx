@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useLenis } from './useLenis'
 import { MemorialPage } from './MemorialPages'
 
@@ -48,13 +49,16 @@ function WelcomeCard({ onClose }) {
 
 export default function App() {
   useLenis()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [selected, setSelected] = useState(null)
   const [scrolled, setScrolled] = useState(false)
   const [heroEntered, setHeroEntered] = useState(false)
   const [welcomeOpen, setWelcomeOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('story')
-  const [page, setPage] = useState(() => ['journey', 'archive', 'legacy'].includes(window.location.pathname.split('/').filter(Boolean).at(-1)) ? window.location.pathname.split('/').filter(Boolean).at(-1) : '')
+  const route = location.pathname.split('/').filter(Boolean).at(-1)
+  const page = location.pathname === '/archive/records' ? 'archive/records' : ['journey', 'archive', 'legacy'].includes(route) ? route : ''
 
   // Each route is a new page view, so never carry its predecessor's scroll position over.
   useLayoutEffect(() => {
@@ -99,15 +103,6 @@ export default function App() {
     observer.observe(hero)
     revealIfVisible()
     return () => observer.disconnect()
-  }, [])
-
-  useEffect(() => {
-    const onPopState = () => {
-      const route = window.location.pathname.split('/').filter(Boolean).at(-1)
-      setPage(['journey', 'archive', 'legacy'].includes(route) ? route : '')
-    }
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   useEffect(() => {
@@ -162,8 +157,7 @@ export default function App() {
   const navigateTo = (destination) => {
     setMenuOpen(false)
     const nextPath = destination ? `/${destination}` : '/'
-    if (window.location.pathname !== nextPath) window.history.pushState({}, '', nextPath)
-    setPage(destination)
+    if (location.pathname !== nextPath) navigate(nextPath)
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }
 
@@ -180,8 +174,7 @@ export default function App() {
     if (id === 'legacy') return navigateTo('legacy')
 
     if (page) {
-      window.history.pushState({}, '', '/')
-      setPage('')
+      navigate('/')
       window.setTimeout(() => {
         const target = document.getElementById(id) || document.getElementById('top')
         target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
